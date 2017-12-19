@@ -1,5 +1,5 @@
 {
-  "id": "/elastic6-data2",
+  "id": "/elastic6-data",
   "cmd": "chown -R elasticsearch:elasticsearch /usr/share/elasticsearch && /usr/local/bin/docker-entrypoint.sh",
   "container": {
     "type": "DOCKER",
