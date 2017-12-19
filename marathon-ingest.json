@@ -1,0 +1,59 @@
+{
+  "id": "/elastic6-ingest",
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "docker.elastic.co/elasticsearch/elasticsearch-platinum:6.1.0",
+      "forcePullImage": false,
+      "privileged": false
+    },
+    "portMappings": [
+      {
+        "containerPort": 9300,
+        "labels": {
+          "VIP_0": "/elastic6:9300"
+        },
+        "name": "es-protocol"
+      },
+      {
+        "containerPort": 9200,
+        "hostPort": 0,
+        "labels": {
+          "VIP_1": "/elastic6:9200"
+        },
+        "protocol": "tcp"
+      }
+    ]
+  },
+  "instances": 1,
+  "cpus": 1,
+  "mem": 2048,
+  "env": {
+    "ES_JAVA_OPTS": "-Xms512m -Xmx512m",
+    "bootstrap.memory_lock": "false",
+    "cluster.name": "elastic6",
+    "node.master": "false",
+    "node.data": "false",
+    "node.ingest": "true",
+    "network.host": "0.0.0.0",
+    "discovery.zen.minimum_master_nodes": "2",
+    "discovery.zen.ping.unicast.hosts": "elastic6.marathon.l4lb.thisdcos.directory",
+    "path.data": "/usr/share/elasticsearch/data",
+    "ELASTIC_PASSWORD": "changeme"
+  },
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "requirePorts": false,
+  "healthChecks": [],
+  "fetch": [],
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ]
+}

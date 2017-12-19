@@ -1,0 +1,80 @@
+{
+  "id": "/elastic6-data2",
+  "cmd": "chown -R elasticsearch:elasticsearch /usr/share/elasticsearch && /usr/local/bin/docker-entrypoint.sh",
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/usr/share/elasticsearch/data",
+        "hostPath": "data",
+        "mode": "RW"
+      },
+      {
+        "persistent": {
+          "type": "root",
+          "size": 8192,
+          "constraints": []
+        },
+        "mode": "RW",
+        "containerPath": "data"
+      }
+    ],
+    "docker": {
+      "image": "docker.elastic.co/elasticsearch/elasticsearch-platinum:6.1.0",
+      "forcePullImage": false,
+      "privileged": false
+    },
+    "portMappings": [
+      {
+        "containerPort": 9300,
+        "labels": {
+          "VIP_0": "/elastic6:9300"
+        },
+        "name": "es-protocol"
+      },
+      {
+        "containerPort": 9200,
+        "hostPort": 0,
+        "labels": {
+          "VIP_1": "/elastic6:9200"
+        },
+        "protocol": "tcp"
+      }
+    ]
+  },
+  "instances": 3,
+  "cpus": 1,
+  "mem": 4096,
+  "env": {
+    "ES_JAVA_OPTS": "-Xms2048m -Xmx2048m",
+    "bootstrap.memory_lock": "false",
+    "cluster.name": "elastic6",
+    "node.master": "false",
+    "node.data": "true",
+    "node.ingest": "false",
+    "network.host": "0.0.0.0",
+    "discovery.zen.minimum_master_nodes": "2",
+    "discovery.zen.ping.unicast.hosts": "elastic6.marathon.l4lb.thisdcos.directory",
+    "path.data": "/usr/share/elasticsearch/data",
+    "ELASTIC_PASSWORD": "changeme"
+  },
+  "networks": [
+    {
+      "name": "dcos",
+      "mode": "container"
+    }
+  ],
+  "residency": {
+    "relaunchEscalationTimeoutSeconds": 10,
+    "taskLostBehavior": "WAIT_FOREVER"
+  },
+  "requirePorts": false,
+  "healthChecks": [],
+  "fetch": [],
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ]
+}
