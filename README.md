@@ -12,6 +12,8 @@ Make sure to set the required ulimits/memory settings on the host machines as de
 
 You can modify the marathon files as desired.
 
+Ensure you change **ELASTIC_PASSWORD**.
+
 # Caveats
 Persistent Marathon services that use local volumes canot update resources such as: volume size, cpu usage, memory. See: https://dcos.io/docs/1.10/storage/persistent-volume/.
 
