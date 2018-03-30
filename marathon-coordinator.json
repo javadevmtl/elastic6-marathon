@@ -1,5 +1,5 @@
 {
-  "id": "/es622-ingest-prod",
+  "id": "/es622-coordinator-prod",
   "container": {
     "type": "DOCKER",
     "docker": {
@@ -15,7 +15,7 @@
       {
         "containerPort": 9300,
         "labels": {
-          "VIP_0": "/ingest6:9300"
+          "VIP_0": "/coordinator6:9300"
         },
         "name": "es-protocol"
       },
@@ -23,31 +23,36 @@
         "containerPort": 9200,
         "hostPort": 0,
         "labels": {
-          "VIP_1": "/ingest6:9200"
+          "VIP_1": "/coordinator6:9200"
         },
         "protocol": "tcp",
         "name": "es-http"
       }
     ]
   },
-  "instances": 2,
-  "cpus": 2,
-  "mem": 4096,
+  "instances": 3,
+  "cpus": 4,
+  "mem": 16384,
   "env": {
     "CONTAINER_LOGGER_LOGROTATE_MAX_STDOUT_SIZE": "10MB",
     "CONTAINER_LOGGER_LOGROTATE_MAX_STDERR_SIZE": "10MB",
-    "ES_JAVA_OPTS": "-Xms2048m -Xmx2048m",
+    "ES_JAVA_OPTS": "-Xms8192m -Xmx8192m",
     "bootstrap.memory_lock": "true",
     "cluster.name": "es6-prod",
-    "node.name": "ingest",
+    "node.name": "coordinator",
     "node.master": "false",
     "node.data": "false",
-    "node.ingest": "true",
+    "node.ingest": "false",
     "network.host": "0.0.0.0",
     "discovery.zen.minimum_master_nodes": "2",
     "discovery.zen.ping.unicast.hosts": "es6.marathon.l4lb.thisdcos.directory",
+    "path.data": "/usr/share/elasticsearch/data",
     "ELASTIC_PASSWORD": "xxxxxx",
     "reindex.remote.whitelist": "xxxxxx"
+  },
+  "labels": {
+    "HAPROXY_GROUP": "external",
+    "HAPROXY_1_VHOST": "coordinator.mydomain.com"
   },
   "networks": [
     {

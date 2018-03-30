@@ -1,5 +1,5 @@
 {
-  "id": "/elastic6-data",
+  "id": "/es622-data-prod",
   "cmd": "chown -R elasticsearch:elasticsearch /usr/share/elasticsearch && /usr/local/bin/docker-entrypoint.sh",
   "container": {
     "type": "DOCKER",
@@ -12,7 +12,7 @@
       {
         "persistent": {
           "type": "root",
-          "size": 8192,
+          "size": 1300000,
           "constraints": []
         },
         "mode": "RW",
@@ -20,15 +20,19 @@
       }
     ],
     "docker": {
-      "image": "docker.elastic.co/elasticsearch/elasticsearch-platinum:6.1.0",
-      "forcePullImage": false,
-      "privileged": false
+      "image": "docker.elastic.co/elasticsearch/elasticsearch-platinum:6.2.2",
+      "forcePullImage": true,
+      "privileged": false,
+      "parameters": [
+        { "key": "ulimit", "value": "memlock=-1:-1" },
+        { "key": "log-driver", "value": "none" }
+      ]
     },
     "portMappings": [
       {
         "containerPort": 9300,
         "labels": {
-          "VIP_0": "/elastic6:9300"
+          "VIP_0": "/data6:9300"
         },
         "name": "es-protocol"
       },
@@ -36,27 +40,36 @@
         "containerPort": 9200,
         "hostPort": 0,
         "labels": {
-          "VIP_1": "/elastic6:9200"
+          "VIP_1": "/data6:9200"
         },
-        "protocol": "tcp"
+        "protocol": "tcp",
+        "name": "es-http"
       }
     ]
   },
   "instances": 3,
-  "cpus": 1,
-  "mem": 4096,
+  "cpus": 4,
+  "mem": 49152,
   "env": {
-    "ES_JAVA_OPTS": "-Xms2048m -Xmx2048m",
-    "bootstrap.memory_lock": "false",
-    "cluster.name": "elastic6",
+    "CONTAINER_LOGGER_LOGROTATE_MAX_STDOUT_SIZE": "10MB",
+    "CONTAINER_LOGGER_LOGROTATE_MAX_STDERR_SIZE": "10MB",
+    "ES_JAVA_OPTS": "-Xms20480m -Xmx20480m",
+    "bootstrap.memory_lock": "true",
+    "cluster.name": "es6-prod",
+    "node.name": "data",
     "node.master": "false",
     "node.data": "true",
     "node.ingest": "false",
     "network.host": "0.0.0.0",
     "discovery.zen.minimum_master_nodes": "2",
-    "discovery.zen.ping.unicast.hosts": "elastic6.marathon.l4lb.thisdcos.directory",
+    "discovery.zen.ping.unicast.hosts": "es6.marathon.l4lb.thisdcos.directory",
     "path.data": "/usr/share/elasticsearch/data",
-    "ELASTIC_PASSWORD": "changeme"
+    "ELASTIC_PASSWORD": "xxxxxx",
+    "reindex.remote.whitelist": "xxxxxx"
+  },
+  "labels": {
+    "HAPROXY_GROUP": "external",
+    "HAPROXY_0_VHOST": "esdata6.mydomain.com"
   },
   "networks": [
     {
@@ -69,12 +82,21 @@
     "taskLostBehavior": "WAIT_FOREVER"
   },
   "requirePorts": false,
-  "healthChecks": [],
   "fetch": [],
+  "healthChecks": [],
   "constraints": [
     [
       "hostname",
       "UNIQUE"
+    ],
+    [
+      "agent_type",
+      "LIKE",
+      "elastic"
     ]
-  ]
+  ],
+  "upgradeStrategy": {
+    "maximumOverCapacity": 0,
+    "minimumHealthCapacity": 0.5
+  }
 }
