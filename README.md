@@ -27,7 +27,10 @@ Ensure you change **ELASTIC_PASSWORD**.
 
 You can also expose the nodes to your external network using **HAPROXY_GROUP** and **HAPROXY_0_VHOST**. See coordinator and data nodes as example.
 
+By external, here, we mean anything that is outside of the container/mesos network. I.e: Your dev laptop over wifi, another development environment, etc...
 
+# Placement Constraints
+Each elastic node is configured to deploy on a UNIQUE host + dedicated Elasticsearch Mesos agents using Mesos attributes.
 
 # Caveats
 Persistent Marathon services that use local volumes cannot update resources such as: volume size, cpu usage, memory. See: https://dcos.io/docs/1.10/storage/persistent-volume/.
