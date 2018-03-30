@@ -69,7 +69,7 @@
   },
   "labels": {
     "HAPROXY_GROUP": "external",
-    "HAPROXY_0_VHOST": "esdata6.mydomain.com"
+    "HAPROXY_0_VHOST": "data.mydomain.com"
   },
   "networks": [
     {
